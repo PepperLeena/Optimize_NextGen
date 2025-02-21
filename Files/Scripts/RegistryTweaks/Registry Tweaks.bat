@@ -13,21 +13,6 @@ C:\Windows\system32\reg.exe query "HKU\S-1-5-19" 1>nul 2>nul || goto :No_Admin
 	set "Win_Games=Games_OFF"
 
 
-:: Start Process
-	cls
-	if not "%Win_Edition%"=="Windows Server 2019" ( call :WStore_Check )
-	echo %hide_cursor%Optimizing privacy:
-	call :Telemetry_Settings
-	call :Privacy_Settings
-	echo %yellow%Privacy registry settings task has completed successfully.%white%& echo:
-	echo %show_cursor%Optimizing performances:
-	call :Performances_Settings
-	call :Power_Settings
-	echo %yellow%Performances registry settings task has completed successfully.%white%& echo:
-	<nul set /p dummyName=Press any key to exit...%show_cursor%
-	pause >nul 2>&1
-exit /b
-
 :Telemetry_Settings
 	<nul set /p DummyName=[2X[2C-Processing telemetry blocking tweaks...[103X%show_cursor%
 REM Disabling Application Compatibility telemetry, CEIP, telemetry uploading, recommended updates
