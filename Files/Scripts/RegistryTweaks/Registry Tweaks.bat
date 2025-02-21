@@ -12,43 +12,6 @@ C:\Windows\system32\reg.exe query "HKU\S-1-5-19" 1>nul 2>nul || goto :No_Admin
 	set "Win_Store=Store_OFF"
 	set "Win_Games=Games_OFF"
 
-REM Get User SID
-	for /f "tokens=1,2 delims==" %%s IN ('wmic path win32_useraccount where name^='%username%' get sid /value ^| find /i "SID"') do set "User_SID=%%t"
-
-REM Check Windows architecture,edition and build number
-	for /f "tokens=1* delims==" %%A in ('wmic os get OSArchitecture^,Caption^,BuildNumber /value') do (
-		for /f "tokens=*" %%S in ("%%B") do (
-			if "%%A"=="BuildNumber" set "Build_Number=%%S"
-			if "%%A"=="Caption" set "OS_Name=%%S"
-			if "%%A"=="OSArchitecture" set "OS_Architecture=%%S"
-	))
-
-REM Exit if OS is not 64 bit, or buildnumber less than 1809
-	if not "%OS_Architecture%"=="64-bit" ( goto :Error_No_64bit_System )
-	if %Build_Number% LSS 17763 ( goto :Inferior_Build )
-
-REM LTSC editions
-	if %Build_Number% EQU 17763 (
-		if "%OS_Name%"=="Microsoft Windows Server 2019 Datacenter" ( set "Win_Edition=Windows Server 2019" & goto :START )
-		if "%OS_Name%"=="Microsoft Windows Server 2019 Standard" ( set "Win_Edition=Windows Server 2019" & goto :START )
-		if "%OS_Name%"=="Microsoft Windows Server 2019 Essentials" ( set "Win_Edition=Windows Server 2019" & goto :START )
-		if "%OS_Name%"=="Microsoft Windows 10 Enterprise LTSC" ( set "Win_Edition=Windows 10 LTSC" & goto :START )
-		if "%OS_Name%"=="Microsoft Windows 10 Enterprise N LTSC" ( set "Win_Edition=Windows 10 LTSC" & goto :START )
-	)
-
-REM Regular editions
-	set "OS_Name=%OS_Name:~0,20%"
-	if "%OS_Name%"=="Microsoft Windows 10" ( set "Win_Edition=Windows 10" & goto :START ) else ( goto :Error_Edition_Not_Found )
-
-:START
-	if not "%Win_Edition%"== "Windows Server 2019" ( call :WStore_Check )
-
-:: Titlebar
-	echo %hide_cursor%%white%]0;Registry Tweaks& cls
-
-:: Start when you're ready.
-	<nul set /p dummyName=Press any key to apply %Win_Edition% registry tweaks...%show_cursor%
-	pause >nul 2>&1
 
 :: Start Process
 	cls
